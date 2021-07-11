@@ -1,5 +1,3 @@
-type Index = std::num::NonZeroUsize;
-
 /**
  * Items represent a condition to be fulfilled. They are linked together in a
  * linked list denoting the items that remain to be covered in the subproblem
@@ -13,12 +11,12 @@ struct ItemNode {
 
 #[derive(Debug, Eq, PartialEq)]
 struct Items {
-    nodes: Vec<ItemNode>
+    nodes: Box<[ItemNode]>
 }
 
 impl Items {
     fn new(size: usize) -> Self {
-        let mut nodes = vec![ItemNode{ previous: 0, next: 0 }; size + 1];
+        let mut nodes = vec![ItemNode{ previous: 0, next: 0 }; size + 1].into_boxed_slice();
         
         for (index, ref mut node) in nodes.iter_mut().enumerate() {
             node.previous = index.wrapping_sub(1);
@@ -90,6 +88,10 @@ impl<'a> Item<'a> {
         self.list[previous].next = self.current;
         self.list[next].previous = self.current;
     }
+
+    fn index(&self) -> usize {
+        self.current
+    }
 }
 
 impl<'a> std::ops::Deref for Item<'a> {
@@ -136,7 +138,7 @@ mod items {
             ItemNode{ previous: 4, next: 6 },
             ItemNode{ previous: 5, next: 7 },
             ItemNode{ previous: 6, next: 0 },
-        ]};
+        ].into_boxed_slice()};
         assert_eq!(a, b, "Linked list nodes should point to directly adjacent nodes upon construction");
     }
 
