@@ -1,3 +1,5 @@
+type Index = std::num::NonZeroUsize;
+
 /**
  * Items represent a condition to be fulfilled. They are linked together in a
  * linked list denoting the items that remain to be covered in the subproblem
